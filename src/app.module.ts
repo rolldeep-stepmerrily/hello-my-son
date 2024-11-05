@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { ConfigProviderModule } from './common/config-provider';
 import { HttpLoggerMiddleware } from './common/middlewares';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     PrismaModule,
     ConfigProviderModule,
+    UsersModule,
   ],
   controllers: [AppController],
 })

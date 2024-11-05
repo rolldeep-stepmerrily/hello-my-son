@@ -21,8 +21,9 @@ model User {
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
 
-  fatherOf Parent[] @relation("FatherParents")
-  motherOf Parent[] @relation("MotherParents")
+  fatherOf     Parent[]       @relation("FatherParents")
+  motherOf     Parent[]       @relation("MotherParents")
+  Conversation Conversation[]
 }
 
 model Parent {
@@ -50,6 +51,32 @@ model Baby {
   deletedAt      DateTime?
 
   parent Parent? @relation(fields: [parentId], references: [id])
+}
 
-  @@unique([fetusName, name])
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+
+  user     User      @relation(fields: [userId], references: [id])
+  messages Message[]
+}
+
+enum ESender {
+  USER
+  BOT
+}
+
+model Message {
+  id             String    @id @default(uuid(7))
+  conversationId Int
+  sender         ESender   @default(USER)
+  content        String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  deletedAt      DateTime?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
 }

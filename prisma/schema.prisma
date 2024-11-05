@@ -7,11 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ERole {
+  FATHER
+  MOTHER
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
   password  String
+  role      ERole     @default(FATHER)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
+
+  fatherOf Parent[] @relation("FatherParents")
+  motherOf Parent[] @relation("MotherParents")
+}
+
+model Parent {
+  id        Int       @id @default(autoincrement())
+  fatherId  Int?
+  motherId  Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
+
+  father User? @relation("FatherParents", fields: [fatherId], references: [id])
+  mother User? @relation("MotherParents", fields: [motherId], references: [id])
+
+  babies Baby[]
+}
+
+model Baby {
+  id             Int       @id @default(autoincrement())
+  parentId       Int?
+  fetusName      String?
+  name           String?
+  pregnancyDueAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  deletedAt      DateTime?
+
+  parent Parent? @relation(fields: [parentId], references: [id])
+
+  @@unique([fetusName, name])
 }

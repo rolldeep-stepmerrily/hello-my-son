@@ -19,3 +19,4 @@ export const ADMIN_NAME_PROVIDER = createConfigProvider<string>('ADMIN_NAME');
 export const ADMIN_PASSWORD_PROVIDER = createConfigProvider<string>('ADMIN_PASSWORD');
 export const GUEST_NAME_PROVIDER = createConfigProvider<string>('GUEST_NAME');
 export const GUEST_PASSWORD_PROVIDER = createConfigProvider<string>('GUEST_PASSWORD');
+export const PERPLEXITY_API_KEY_PROVIDER = createConfigProvider<string>('PERPLEXITY_API_KEY');

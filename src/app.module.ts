@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
 
 import { AppController } from './app.controller';
+import { ChatbotModule } from './chatbot/chatbot.module';
 import { ConfigProviderModule } from './common/config-provider';
 import { HttpLoggerMiddleware } from './common/middlewares';
 import { PrismaModule } from './prisma/prisma.module';
@@ -21,6 +22,7 @@ import { UsersModule } from './users/users.module';
         ADMIN_PASSWORD: Joi.string().required(),
         GUEST_NAME: Joi.string().required(),
         GUEST_PASSWORD: Joi.string().required(),
+        PERPLEXITY_API_KEY: Joi.string().required(),
       }),
       isGlobal: true,
       envFilePath: '.env',
@@ -29,6 +31,7 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     ConfigProviderModule,
     UsersModule,
+    ChatbotModule,
   ],
   controllers: [AppController],
 })

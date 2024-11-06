@@ -8,5 +8,6 @@ declare namespace NodeJS {
     ADMIN_PASSWORD: string;
     GUEST_NAME: string;
     GUEST_PASSWORD: string;
+    PERPLEXITY_API_KEY: string;
   }
 }

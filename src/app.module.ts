@@ -23,6 +23,7 @@ import { UsersModule } from './users/users.module';
         GUEST_NAME: Joi.string().required(),
         GUEST_PASSWORD: Joi.string().required(),
         PERPLEXITY_API_KEY: Joi.string().required(),
+        JWT_SECRET_KEY: Joi.string().required(),
       }),
       isGlobal: true,
       envFilePath: '.env',

@@ -9,5 +9,6 @@ declare namespace NodeJS {
     GUEST_NAME: string;
     GUEST_PASSWORD: string;
     PERPLEXITY_API_KEY: string;
+    JWT_SECRET_KEY: string;
   }
 }

@@ -21,4 +21,14 @@ export const USER_ERRORS = {
     errorCode: 'INVALID_PASSWORD',
     message: '비밀번호가 일치하지 않습니다.',
   },
+  FORBIDDEN_REQUEST: {
+    statusCode: HttpStatus.FORBIDDEN,
+    errorCode: 'FORBIDDEN_REQUEST',
+    message: '허용되지 않은 요청입니다.',
+  },
+  WITHDRAWAL_USER: {
+    statusCode: HttpStatus.GONE,
+    errorCode: 'WITHDRAWAL_USER',
+    message: '탈퇴한 회원입니다.',
+  },
 };

@@ -1,6 +1,6 @@
 {
   "name": "hello-my-son",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "author": "",
   "private": true,
@@ -48,6 +48,7 @@
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
     "@types/node": "^20.3.1",
+    "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",

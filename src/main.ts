@@ -20,6 +20,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
+  app.setGlobalPrefix('api');
+
   const isProduction = configService.getOrThrow<string>('NODE_ENV') === 'production';
 
   app.useGlobalInterceptors(new TransformInterceptor());

@@ -21,4 +21,9 @@ export const GLOBAL_ERRORS = {
     errorCode: 'DATABASE_ERROR',
     message: '데이터베이스 에러가 발생하였습니다.',
   },
+  NETWORK_ERROR: {
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorCode: 'NETWORK_ERROR',
+    message: '네트워크 에러가 발생하였습니다.',
+  },
 };

@@ -16,7 +16,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '로그인' })
-  @Post('signIn')
+  @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
     return await this.usersService.signIn(signInDto);
   }

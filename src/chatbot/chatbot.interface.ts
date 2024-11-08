@@ -12,8 +12,8 @@ interface IMessage {
 interface IChoices {
   index: number;
   finish_reason: string;
-  message: IMessage[];
-  delta: IMessage[];
+  message: IMessage;
+  delta: IMessage;
 }
 
 export interface IAnswer {

@@ -12,5 +12,6 @@ import { UsersService } from './users.service';
   imports: [PrismaModule, JwtModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, JWTStrategy],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

@@ -13,11 +13,18 @@ export class ChatbotRepository {
     return await this.prismaService.conversation.create({ data: { userId }, select: { id: true } });
   }
 
+  async findConversation(userId: number, conversationId: number) {
+    return await this.prismaService.conversation.findUnique({
+      where: { id: conversationId, userId, deletedAt: null },
+      select: { id: true },
+    });
+  }
+
   async findMessages(conversationId: number) {
     return await this.prismaService.message.findMany({
       where: { conversationId },
       select: { id: true, content: true, sender: true, createdAt: true },
-      orderBy: { id: 'desc' },
+      orderBy: { id: 'asc' },
       take: 20,
     });
   }

@@ -9,6 +9,7 @@ import { ConfigProviderModule } from './common/config-provider';
 import { HttpLoggerMiddleware } from './common/middlewares';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
+import { BabiesModule } from './babies/babies.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UsersModule } from './users/users.module';
     ConfigProviderModule,
     UsersModule,
     ChatbotModule,
+    BabiesModule,
   ],
   controllers: [AppController],
 })

@@ -33,9 +33,15 @@ export class UsersRepository {
   }
 
   async createUser(createUserDto: CreateUserDto) {
-    return await this.prismaService.user.create({
-      data: { ...createUserDto },
-      select: { id: true },
+    return await this.prismaService.$transaction(async (prisma) => {
+      const newUser = await prisma.user.create({ data: { ...createUserDto }, select: { id: true, role: true } });
+
+      await prisma.parent.create({
+        data: newUser.role === 'FATHER' ? { fatherId: newUser.id } : { motherId: newUser.id },
+        select: { id: true },
+      });
+
+      return newUser;
     });
   }
 }

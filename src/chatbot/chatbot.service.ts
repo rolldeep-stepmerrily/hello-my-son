@@ -2,8 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { CustomHttpException, GLOBAL_ERRORS } from '@@exceptions';
 
+import { BabiesRepository } from 'src/babies/babies.repository';
 import { UsersRepository } from 'src/users/users.repository';
 
+import { SendMessageDto } from './chatbot.dto';
 import { CHATBOT_ERRORS } from './chatbot.exception';
 import { IAnswer } from './chatbot.interface';
 import { getBabySystemPrompt } from './chatbot.prompt';
@@ -16,12 +18,13 @@ export class ChatbotService {
 
   constructor(
     private readonly chatbotRepository: ChatbotRepository,
-    private readonly userRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository,
+    private readonly babiesRepository: BabiesRepository,
     @Inject('PERPLEXITY_API_KEY') private readonly apiKey: string,
   ) {}
 
-  async sendMessage(userId: number, content: string, conversationId?: number) {
-    const user = await this.userRepository.findUserById(userId);
+  async sendMessage(userId: number, { babyId, content, conversationId }: SendMessageDto) {
+    const user = await this.usersRepository.findUserById(userId);
 
     if (!user) {
       throw new CustomHttpException(CHATBOT_ERRORS.USER_NOT_FOUND);
@@ -48,11 +51,23 @@ export class ChatbotService {
       content: message.content,
     }));
 
-    const role = user.role === 'FATHER' ? '아빠' : '엄마';
+    const baby = await this.babiesRepository.findBaby(babyId);
+
+    if (!baby) {
+      throw new CustomHttpException(CHATBOT_ERRORS.BABY_NOT_FOUND);
+    }
+
+    if (user.role === 'FATHER' && baby.parent?.fatherId !== user.id) {
+      throw new CustomHttpException(CHATBOT_ERRORS.USER_NOT_MATCH);
+    } else if (user.role === 'MOTHER' && baby.parent?.motherId !== user.id) {
+      throw new CustomHttpException(CHATBOT_ERRORS.USER_NOT_MATCH);
+    }
+
+    const koreanRole = user.role === 'FATHER' ? '아빠' : '엄마';
 
     const systemPrompt = {
       role: 'system',
-      content: getBabySystemPrompt(role),
+      content: getBabySystemPrompt(koreanRole, baby.fetusName),
     };
 
     const payload = {

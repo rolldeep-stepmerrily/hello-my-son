@@ -1,5 +1,13 @@
 ### version log
 
+#### 1.0.4
+
+1. Babies Module 업데이트
+2. Chatbot - 아기 데이터 필수 추가
+3. 마이너 refactoring
+
+---
+
 #### 1.0.3
 
 1. Perplexity API 연결 및 Chatbot Module 업데이트

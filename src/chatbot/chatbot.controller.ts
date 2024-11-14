@@ -16,7 +16,7 @@ export class ChatbotController {
 
   @ApiOperation({ summary: '메시지 전송' })
   @Post()
-  async sendMessage(@User('id') userId: number, @Body() { content, conversationId }: SendMessageDto) {
-    return await this.chatbotService.sendMessage(userId, content, conversationId);
+  async sendMessage(@User('id') userId: number, @Body() sendMessageDto: SendMessageDto) {
+    return await this.chatbotService.sendMessage(userId, sendMessageDto);
   }
 }

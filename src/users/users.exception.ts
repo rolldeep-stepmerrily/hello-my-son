@@ -31,4 +31,14 @@ export const USER_ERRORS = {
     errorCode: 'WITHDRAWAL_USER',
     message: '탈퇴한 회원입니다.',
   },
+  PARENT_NOT_FOUND: {
+    statusCode: HttpStatus.NOT_FOUND,
+    errorCode: 'PARENT_NOT_FOUND',
+    message: '부모 정보를 찾을 수 없습니다.',
+  },
+  TINY_URL_ERROR: {
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorCode: 'TINY_URL_ERROR',
+    message: '단축 URL 서비스에서 오류가 발생하였습니다.',
+  },
 };

@@ -5,17 +5,25 @@ import * as bcrypt from 'bcrypt';
 
 import { CustomHttpException } from '@@exceptions';
 
+import { ParentsRepository } from 'src/parents/parents.repository';
+
 import { CreateUserDto, SignInDto } from './users.dto';
 import { USER_ERRORS } from './users.exception';
+import { IInviteTokenPayload } from './users.interface';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
+  #tinyUrl = 'https://api.tinyurl.com';
+
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
+    private readonly parentsRepository: ParentsRepository,
     @Inject('NODE_ENV') private readonly nodeEnv: string,
     @Inject('JWT_SECRET_KEY') private readonly jwtSecretKey: string,
+    @Inject('SERVER_URL') private readonly serverUrl: string,
+    @Inject('TINY_URL_API_KEY') private readonly tinyUrlApiKey: string,
   ) {}
 
   async hashPassword(password: string) {
@@ -71,5 +79,41 @@ export class UsersService {
       accessToken: this.jwtService.sign({ sub: 'access', id: user.id }, { secret: this.jwtSecretKey, expiresIn }),
       refreshToken: this.jwtService.sign({ sub: 'refresh', id: user.id }, { secret: this.jwtSecretKey }),
     };
+  }
+
+  generateInviteToken(payload: IInviteTokenPayload) {
+    return this.jwtService.sign(payload, { secret: this.jwtSecretKey, expiresIn: '7d' });
+  }
+
+  async generateInviteLink(userId: number) {
+    const user = await this.usersRepository.findUserById(userId);
+
+    if (!user) {
+      throw new CustomHttpException(USER_ERRORS.USER_NOT_FOUND);
+    }
+
+    const parent = await this.parentsRepository.findParent(userId);
+
+    if (!parent) {
+      throw new CustomHttpException(USER_ERRORS.PARENT_NOT_FOUND);
+    }
+
+    const inviteToken = this.generateInviteToken({ parentId: parent.id, inviterType: user.role });
+
+    const payload = { url: `${this.serverUrl}/users/invite?token=${inviteToken}` };
+
+    const response = await fetch(`${this.#tinyUrl}/create?api_token=${this.tinyUrlApiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new CustomHttpException(USER_ERRORS.TINY_URL_ERROR);
+    }
+
+    const { data } = await response.json();
+
+    return { uri: data.tiny_url };
   }
 }

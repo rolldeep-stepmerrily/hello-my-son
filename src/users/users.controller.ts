@@ -12,15 +12,6 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: '초대 링크를 이용한 회원 가입' })
-  @Post('sign-up/invite')
-  async createUserWithInviteLink(
-    @Body() createUserWithInviteLinkDto: CreateUserWithInviteLinkDto,
-    @Query() { token }: ValidateInviteLinkDto,
-  ) {
-    return await this.usersService.createUserWithInviteLink(createUserWithInviteLinkDto, token);
-  }
-
   @ApiOperation({ summary: '회원 가입' })
   @Post('sign-up')
   async createUser(@Body() createUserDto: CreateUserDto) {
@@ -36,14 +27,23 @@ export class UsersController {
   @ApiOperation({ summary: '초대 링크 생성 및 조회' })
   @ApiBearerAuth('accessToken')
   @UseGuards(AuthGuard('jwt'))
-  @Get('invite')
+  @Get('invitations')
   async generateInviteLink(@User('id') userId: number) {
     return await this.usersService.generateInviteLink(userId);
   }
 
   @ApiOperation({ summary: '초대 링크 유효성 검사' })
-  @Get('invite/check')
+  @Get('invitations/validation')
   async validateInviteLink(@Query() { token }: ValidateInviteLinkDto) {
     return await this.usersService.validateInviteLink(token);
+  }
+
+  @ApiOperation({ summary: '초대 링크를 이용한 회원 가입' })
+  @Post('invitations/sign-up')
+  async createUserWithInviteLink(
+    @Body() createUserWithInviteLinkDto: CreateUserWithInviteLinkDto,
+    @Query() { token }: ValidateInviteLinkDto,
+  ) {
+    return await this.usersService.createUserWithInviteLink(createUserWithInviteLinkDto, token);
   }
 }

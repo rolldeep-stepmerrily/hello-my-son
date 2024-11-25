@@ -39,11 +39,11 @@ export class UsersRepository {
   ) {
     return await this.prismaService.$transaction(async (prisma) => {
       const newUser = await prisma.user.create({
-        data: { ...createUserWithInviteLinkDto },
+        data: { ...createUserWithInviteLinkDto, role: inviterType === 'FATHER' ? 'MOTHER' : 'FATHER' },
         select: { id: true, role: true },
       });
 
-      await this.prismaService.parent.update({
+      await prisma.parent.update({
         where: { id: parentId, deletedAt: null },
         data: {
           ...(inviterType === 'FATHER' ? { motherId: newUser.id } : { fatherId: newUser.id }),
@@ -52,6 +52,7 @@ export class UsersRepository {
       });
     });
   }
+
   async createUser(createUserDto: CreateUserDto) {
     return await this.prismaService.$transaction(async (prisma) => {
       const newUser = await prisma.user.create({ data: { ...createUserDto }, select: { id: true, role: true } });

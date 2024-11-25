@@ -124,7 +124,7 @@ export class UsersService {
 
     const inviteToken = this.generateInviteToken({ parentId: parent.id, inviterType: user.role });
 
-    const payload = { url: `${this.serverUrl}/api/users/invite/check?token=${inviteToken}` };
+    const payload = { url: `${this.serverUrl}/api/users/invitations/validation?token=${inviteToken}` };
 
     const response = await fetch(`${this.#tinyUrl}/create?api_token=${this.tinyUrlApiKey}`, {
       method: 'POST',

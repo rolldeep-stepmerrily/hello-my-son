@@ -2,12 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
+import dayjs from 'dayjs';
 
 import { CustomHttpException } from '@@exceptions';
 
 import { ParentsRepository } from 'src/parents/parents.repository';
 
-import { CreateUserDto, SignInDto } from './users.dto';
+import { CreateUserDto, CreateUserWithInviteLinkDto, SignInDto } from './users.dto';
 import { USER_ERRORS } from './users.exception';
 import { IInviteTokenPayload } from './users.interface';
 import { UsersRepository } from './users.repository';
@@ -38,6 +39,29 @@ export class UsersService {
     return await this.usersRepository.findUserByNickname(nickname);
   }
 
+  async createUserWithInviteLink(createUserWithInviteLinkDto: CreateUserWithInviteLinkDto, token: string) {
+    const { parentId, inviterType } = await this.validateInviteLink(token);
+
+    const { email, password, nickname } = createUserWithInviteLinkDto;
+
+    const emailExists = await this.findUserByEmail(email);
+
+    if (emailExists) {
+      throw new CustomHttpException(USER_ERRORS.DUPLICATE_EMAIL);
+    }
+
+    const nicknameExists = await this.findUserByNickname(nickname);
+
+    if (nicknameExists) {
+      throw new CustomHttpException(USER_ERRORS.DUPLICATE_NICKNAME);
+    }
+
+    const hashedPassword = await this.hashPassword(password);
+
+    createUserWithInviteLinkDto.password = hashedPassword;
+
+    return await this.usersRepository.createUserWithInviteLink(createUserWithInviteLinkDto, parentId, inviterType);
+  }
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
 
@@ -92,7 +116,7 @@ export class UsersService {
       throw new CustomHttpException(USER_ERRORS.USER_NOT_FOUND);
     }
 
-    const parent = await this.parentsRepository.findParent(userId);
+    const parent = await this.parentsRepository.findParentByUserId(userId);
 
     if (!parent) {
       throw new CustomHttpException(USER_ERRORS.PARENT_NOT_FOUND);
@@ -100,7 +124,7 @@ export class UsersService {
 
     const inviteToken = this.generateInviteToken({ parentId: parent.id, inviterType: user.role });
 
-    const payload = { url: `${this.serverUrl}/users/invite?token=${inviteToken}` };
+    const payload = { url: `${this.serverUrl}/api/users/invite/check?token=${inviteToken}` };
 
     const response = await fetch(`${this.#tinyUrl}/create?api_token=${this.tinyUrlApiKey}`, {
       method: 'POST',
@@ -115,5 +139,37 @@ export class UsersService {
     const { data } = await response.json();
 
     return { uri: data.tiny_url };
+  }
+
+  async validateInviteLink(token: string) {
+    const payload: IInviteTokenPayload = this.jwtService.verify(token, { secret: this.jwtSecretKey });
+
+    const { parentId, inviterType, iat, exp } = payload;
+
+    if (!parentId || !inviterType || !iat || !exp) {
+      throw new CustomHttpException(USER_ERRORS.INVALID_INVITE_LINK);
+    }
+
+    const isExpired = exp && dayjs().isAfter(dayjs.unix(exp));
+
+    if (isExpired) {
+      throw new CustomHttpException(USER_ERRORS.EXPIRED_INVITE_LINK);
+    }
+
+    const parent = await this.parentsRepository.findParentById(parentId);
+
+    if (!parent) {
+      throw new CustomHttpException(USER_ERRORS.PARENT_NOT_FOUND);
+    }
+
+    if (inviterType === 'FATHER' && parent.motherId) {
+      throw new CustomHttpException(USER_ERRORS.FORBIDDEN_REQUEST);
+    } else if (inviterType === 'MOTHER' && parent.fatherId) {
+      throw new CustomHttpException(USER_ERRORS.FORBIDDEN_REQUEST);
+    }
+
+    const signUpUrl = `${this.serverUrl}/api/users/invite/sign-up?token=${token}`;
+
+    return { signUpUrl, parentId, inviterType };
   }
 }

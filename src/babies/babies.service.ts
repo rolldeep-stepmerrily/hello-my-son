@@ -16,7 +16,7 @@ export class BabiesService {
   ) {}
 
   async createBaby(userId: number, createBabyDto: CreateBabyDto) {
-    const parent = await this.parentsRepository.findParent(userId);
+    const parent = await this.parentsRepository.findParentByUserId(userId);
 
     if (!parent) {
       throw new CustomHttpException(BABY_ERRORS.PARENT_NOT_FOUND);

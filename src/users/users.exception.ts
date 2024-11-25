@@ -41,4 +41,14 @@ export const USER_ERRORS = {
     errorCode: 'TINY_URL_ERROR',
     message: '단축 URL 서비스에서 오류가 발생하였습니다.',
   },
+  INVALID_INVITE_LINK: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    errorCode: 'INVALID_INVITE_LINK',
+    message: '초대 링크가 유효하지 않습니다.',
+  },
+  EXPIRED_INVITE_LINK: {
+    statusCode: HttpStatus.BAD_REQUEST,
+    errorCode: 'EXPIRED_INVITE_LINK',
+    message: '초대 링크가 만료되었습니다.',
+  },
 };

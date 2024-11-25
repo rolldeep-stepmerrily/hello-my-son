@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { User } from '@@decorators';
 
-import { CreateUserDto, SignInDto } from './users.dto';
+import { CreateUserDto, CreateUserWithInviteLinkDto, SignInDto, ValidateInviteLinkDto } from './users.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -12,8 +12,17 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: '초대 링크를 이용한 회원 가입' })
+  @Post('sign-up/invite')
+  async createUserWithInviteLink(
+    @Body() createUserWithInviteLinkDto: CreateUserWithInviteLinkDto,
+    @Query() { token }: ValidateInviteLinkDto,
+  ) {
+    return await this.usersService.createUserWithInviteLink(createUserWithInviteLinkDto, token);
+  }
+
   @ApiOperation({ summary: '회원 가입' })
-  @Post()
+  @Post('sign-up')
   async createUser(@Body() createUserDto: CreateUserDto) {
     await this.usersService.createUser(createUserDto);
   }
@@ -21,7 +30,7 @@ export class UsersController {
   @ApiOperation({ summary: '로그인' })
   @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
-    await this.usersService.signIn(signInDto);
+    return await this.usersService.signIn(signInDto);
   }
 
   @ApiOperation({ summary: '초대 링크 생성 및 조회' })
@@ -30,5 +39,11 @@ export class UsersController {
   @Get('invite')
   async generateInviteLink(@User('id') userId: number) {
     return await this.usersService.generateInviteLink(userId);
+  }
+
+  @ApiOperation({ summary: '초대 링크 유효성 검사' })
+  @Get('invite/check')
+  async validateInviteLink(@Query() { token }: ValidateInviteLinkDto) {
+    return await this.usersService.validateInviteLink(token);
   }
 }

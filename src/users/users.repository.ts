@@ -4,7 +4,7 @@ import { CatchDatabaseErrors } from '@@decorators';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import { CreateUserDto } from './users.dto';
+import { CreateUserDto, CreateUserWithInviteLinkDto } from './users.dto';
 
 @Injectable()
 @CatchDatabaseErrors()
@@ -32,6 +32,26 @@ export class UsersRepository {
     });
   }
 
+  async createUserWithInviteLink(
+    createUserWithInviteLinkDto: CreateUserWithInviteLinkDto,
+    parentId: number,
+    inviterType: 'FATHER' | 'MOTHER',
+  ) {
+    return await this.prismaService.$transaction(async (prisma) => {
+      const newUser = await prisma.user.create({
+        data: { ...createUserWithInviteLinkDto },
+        select: { id: true, role: true },
+      });
+
+      await this.prismaService.parent.update({
+        where: { id: parentId, deletedAt: null },
+        data: {
+          ...(inviterType === 'FATHER' ? { motherId: newUser.id } : { fatherId: newUser.id }),
+        },
+        select: { id: true },
+      });
+    });
+  }
   async createUser(createUserDto: CreateUserDto) {
     return await this.prismaService.$transaction(async (prisma) => {
       const newUser = await prisma.user.create({ data: { ...createUserDto }, select: { id: true, role: true } });

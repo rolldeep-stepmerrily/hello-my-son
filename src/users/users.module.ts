@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { ParentsModule } from 'src/parents/parents.module';
@@ -10,7 +10,7 @@ import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [PrismaModule, JwtModule, ParentsModule],
+  imports: [PrismaModule, JwtModule, forwardRef(() => ParentsModule)],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, JWTStrategy],
   exports: [UsersService, UsersRepository],

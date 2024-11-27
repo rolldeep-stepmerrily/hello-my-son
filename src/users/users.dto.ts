@@ -4,9 +4,22 @@ import { IsJWT, IsString } from 'class-validator';
 
 import { User } from './entities';
 
-export class CreateUserWithInviteLinkDto extends PickType(User, ['email', 'password', 'nickname'] as const) {}
+export class CreateUserWithInviteLinkDto extends PickType(User, [
+  'email',
+  'password',
+  'name',
+  'nickname',
+  'bornAt',
+] as const) {}
 
-export class CreateUserDto extends PickType(User, ['email', 'password', 'nickname', 'role'] as const) {}
+export class CreateUserDto extends PickType(User, [
+  'email',
+  'password',
+  'name',
+  'nickname',
+  'role',
+  'bornAt',
+] as const) {}
 
 export class SignInDto extends PickType(User, ['email', 'password'] as const) {}
 

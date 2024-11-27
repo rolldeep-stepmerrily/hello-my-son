@@ -62,6 +62,7 @@ export class UsersService {
 
     return await this.usersRepository.createUserWithInviteLink(createUserWithInviteLinkDto, parentId, inviterType);
   }
+
   async createUser(createUserDto: CreateUserDto) {
     const { email, password, nickname } = createUserDto;
 

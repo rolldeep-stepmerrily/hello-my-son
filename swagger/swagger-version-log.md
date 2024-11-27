@@ -1,5 +1,12 @@
 ### version log
 
+#### 1.0.6
+
+1. parents controller 업데이트
+2. baby, user entity 업데이트
+
+---
+
 #### 1.0.5
 
 1. 초대 링크를 이용한 회원 가입 기능 추가

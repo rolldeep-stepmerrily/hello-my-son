@@ -9,11 +9,11 @@ import { CustomHttpException, GLOBAL_ERRORS } from '@@exceptions';
 @ApiExcludeController()
 @Controller()
 export class AppController {
-  constructor(@Inject('NODE_ENV') private NODE_ENV: string) {}
+  constructor(@Inject('NODE_ENV') private nodeEnv: string) {}
 
   @Get('version-log')
   async versionLog() {
-    if (this.NODE_ENV !== 'development') {
+    if (this.nodeEnv !== 'development') {
       throw new CustomHttpException(GLOBAL_ERRORS.VERSION_LOG_NOT_FOUND);
     }
 
